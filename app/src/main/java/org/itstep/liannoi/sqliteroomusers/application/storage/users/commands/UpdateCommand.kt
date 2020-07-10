@@ -1,13 +1,14 @@
 package org.itstep.liannoi.sqliteroomusers.application.storage.users.commands
 
-class CreateCommand(
+class UpdateCommand(
+    val userId: Int,
     val firstName: String,
     val lastName: String
 ) {
     interface Handler {
-        fun onUserCreatedSuccess()
+        fun onUserUpdatedSuccess()
 
         // TODO: Replace with custom Exception.
-        fun onUserCreatedError(exception: String)
+        fun onUserUpdatedError(exception: String)
     }
 }

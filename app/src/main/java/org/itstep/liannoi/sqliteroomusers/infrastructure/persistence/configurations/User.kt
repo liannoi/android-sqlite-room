@@ -7,11 +7,15 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Users")
 data class User(
     @ColumnInfo(name = "FirstName")
-    val firstName: String,
+    var firstName: String,
     @ColumnInfo(name = "LastName")
-    val lastName: String
+    var lastName: String
 ) {
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "UserId")
     var userId: Int = 0
+
+    override fun toString(): String {
+        return "User(firstName='$firstName', lastName='$lastName', userId=$userId)"
+    }
 }

@@ -5,6 +5,8 @@ import org.itstep.liannoi.sqliteroomusers.infrastructure.persistence.configurati
 class ListQuery {
     interface Handler {
         fun onUsersFetchedSuccess(users: List<User>)
-        fun onUsersFetchedError()
+
+        // TODO: Replace with custom Exception.
+        fun onUsersFetchedError(exception: String)
     }
 }

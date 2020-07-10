@@ -6,7 +6,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import org.itstep.liannoi.sqliteroomusers.application.common.exceptions.NotFoundFetchedUserException
 import org.itstep.liannoi.sqliteroomusers.application.storage.users.commands.CreateCommand
+import org.itstep.liannoi.sqliteroomusers.application.storage.users.commands.DeleteCommand
+import org.itstep.liannoi.sqliteroomusers.application.storage.users.commands.UpdateCommand
+import org.itstep.liannoi.sqliteroomusers.application.storage.users.queries.DetailQuery
 import org.itstep.liannoi.sqliteroomusers.application.storage.users.queries.ListQuery
 import org.itstep.liannoi.sqliteroomusers.infrastructure.persistence.UsersDatabase
 import org.itstep.liannoi.sqliteroomusers.infrastructure.persistence.configurations.User
@@ -24,7 +28,7 @@ class UsersRepository constructor(private val context: Context) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { handler.onUserCreatedSuccess() },
-                { handler.onUserCreatedError(it.message) })
+                { handler.onUserCreatedError(it.message.toString()) })
             .follow()
     }
 
@@ -32,7 +36,57 @@ class UsersRepository constructor(private val context: Context) {
         dao.getAll()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ handler.onUsersFetchedSuccess(it) }, { handler.onUsersFetchedError() })
+            .subscribe(
+                { handler.onUsersFetchedSuccess(it) },
+                { handler.onUsersFetchedError(it.message.toString()) })
+            .follow()
+    }
+
+    fun getById(query: DetailQuery, handler: DetailQuery.Handler) {
+        dao.getById(query.userId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { handler.onUserFetchedSuccess(it) },
+                { handler.onUserFetchedError(it.message.toString()) },
+                { handler.onUserFetchedEmpty(NotFoundFetchedUserException()) })
+            .follow()
+    }
+
+    fun delete(command: DeleteCommand, handler: DeleteCommand.Handler) {
+        dao.getById(command.userId)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                Completable.fromAction { dao.delete(it) }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { handler.onUserDeletedSuccess() },
+                        { handler.onUserDeletedError(it.message.toString()) })
+                    .follow()
+            }
+            .follow()
+    }
+
+    fun update(command: UpdateCommand, handler: UpdateCommand.Handler) {
+        dao.getById(command.userId)
+            .map {
+                it.firstName = command.firstName
+                it.lastName = command.lastName
+                it
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                Completable.fromAction { dao.update(it) }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { handler.onUserUpdatedSuccess() },
+                        { handler.onUserUpdatedError(it.message.toString()) })
+                    .follow()
+            }
             .follow()
     }
 
