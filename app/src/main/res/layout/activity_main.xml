@@ -5,34 +5,34 @@
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.users.MainActivity">
 
     <EditText
-        android:id="@+id/getByIdUserInput"
+        android:id="@+id/get_by_id_user_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/getByIdUserButton"
+        app:layout_constraintEnd_toStartOf="@+id/get_by_id_user_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/getByIdUserButton"
+        android:id="@+id/get_by_id_user_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Get By Id"
-        app:layout_constraintBottom_toBottomOf="@+id/getByIdUserInput"
+        app:layout_constraintBottom_toBottomOf="@+id/get_by_id_user_input"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/getByIdUserInput"
-        app:layout_constraintTop_toTopOf="@+id/getByIdUserInput" />
+        app:layout_constraintStart_toEndOf="@+id/get_by_id_user_input"
+        app:layout_constraintTop_toTopOf="@+id/get_by_id_user_input" />
 
     <Button
-        android:id="@+id/getAllUsersButton"
+        android:id="@+id/get_all_users_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -41,10 +41,10 @@
         android:text="Get All"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/getByIdUserInput" />
+        app:layout_constraintTop_toBottomOf="@+id/get_by_id_user_input" />
 
     <Button
-        android:id="@+id/createUserButton"
+        android:id="@+id/create_user_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -53,56 +53,56 @@
         android:text="Create"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/getAllUsersButton" />
+        app:layout_constraintTop_toBottomOf="@+id/get_all_users_button" />
 
     <EditText
-        android:id="@+id/updateUserInput"
+        android:id="@+id/update_user_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/updateUserButton"
+        app:layout_constraintEnd_toStartOf="@+id/update_user_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createUserButton" />
+        app:layout_constraintTop_toBottomOf="@+id/create_user_button" />
 
     <Button
-        android:id="@+id/updateUserButton"
+        android:id="@+id/update_user_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Update"
-        app:layout_constraintBottom_toBottomOf="@+id/updateUserInput"
+        app:layout_constraintBottom_toBottomOf="@+id/update_user_input"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/updateUserInput"
-        app:layout_constraintTop_toTopOf="@+id/updateUserInput"
+        app:layout_constraintStart_toEndOf="@+id/update_user_input"
+        app:layout_constraintTop_toTopOf="@+id/update_user_input"
         app:layout_constraintVertical_bias="0.0" />
 
     <EditText
-        android:id="@+id/deleteUserInput"
+        android:id="@+id/delete_user_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        app:layout_constraintEnd_toStartOf="@+id/deleteUserButton"
+        app:layout_constraintEnd_toStartOf="@+id/delete_user_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/updateUserInput" />
+        app:layout_constraintTop_toBottomOf="@+id/update_user_input" />
 
     <Button
-        android:id="@+id/deleteUserButton"
+        android:id="@+id/delete_user_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Delete"
-        app:layout_constraintBottom_toBottomOf="@+id/deleteUserInput"
+        app:layout_constraintBottom_toBottomOf="@+id/delete_user_input"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/deleteUserInput"
-        app:layout_constraintTop_toTopOf="@+id/deleteUserInput" />
+        app:layout_constraintStart_toEndOf="@+id/delete_user_input"
+        app:layout_constraintTop_toTopOf="@+id/delete_user_input" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
