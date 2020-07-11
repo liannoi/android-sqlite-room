@@ -1,13 +1,9 @@
 package org.itstep.liannoi.sqliteroomusers.presentation.users
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import com.jakewharton.rxbinding4.view.clicks
-import com.trello.rxlifecycle4.android.lifecycle.kotlin.bindUntilEvent
-import io.reactivex.plugins.RxJavaPlugins
+import com.trello.rxlifecycle4.android.lifecycle.kotlin.bindToLifecycle
 import kotlinx.android.synthetic.main.activity_main.*
 import org.itstep.liannoi.sqliteroomusers.R
 import org.itstep.liannoi.sqliteroomusers.application.common.exceptions.NotFoundFetchedUserException
@@ -18,45 +14,29 @@ import org.itstep.liannoi.sqliteroomusers.application.storage.users.commands.Upd
 import org.itstep.liannoi.sqliteroomusers.application.storage.users.queries.DetailQuery
 import org.itstep.liannoi.sqliteroomusers.application.storage.users.queries.ListQuery
 import org.itstep.liannoi.sqliteroomusers.infrastructure.persistence.configurations.User
+import org.itstep.liannoi.sqliteroomusers.presentation.AbstractActivity
+import org.itstep.liannoi.sqliteroomusers.presentation.users.list.UsersListActivity
 import java.util.*
 
-class MainActivity : AppCompatActivity(),
+class MainActivity : AbstractActivity(),
     CreateCommand.Handler,
     ListQuery.Handler,
     DetailQuery.Handler,
     DeleteCommand.Handler,
     UpdateCommand.Handler {
+
     private val repository: UsersRepository = UsersRepository(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        RxJavaPlugins.setErrorHandler(Throwable::printStackTrace)
-        getAllUsers()
-
-        get_by_id_user_button.clicks()
-            .map { get_by_id_user_input.text.toString().toInt() }
-            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-            .subscribe { getByIdUser(it) }
-
-        get_all_users_button.clicks()
-            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-            .subscribe { getAllUsers() }
-
-        create_user_button.clicks()
-            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-            .subscribe { createUser() }
-
-        update_user_button.clicks()
-            .map { update_user_input.text.toString().toInt() }
-            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-            .subscribe { updateUser(it) }
-
-        delete_user_button.clicks()
-            .map { delete_user_input.text.toString().toInt() }
-            .bindUntilEvent(this, Lifecycle.Event.ON_STOP)
-            .subscribe { deleteUser(it) }
+        catchErrors()
+        subscribeGetById()
+        subscribeGetAll()
+        subscribeCreate()
+        subscribeUpdate()
+        subscribeDelete()
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -64,7 +44,7 @@ class MainActivity : AppCompatActivity(),
     ///////////////////////////////////////////////////////////////////////////
 
     override fun onUserCreatedSuccess() {
-        Toast.makeText(this, "New user created", Toast.LENGTH_SHORT).show()
+        showToast("New user created")
     }
 
     override fun onUserCreatedError(exception: String) {
@@ -76,11 +56,7 @@ class MainActivity : AppCompatActivity(),
     ///////////////////////////////////////////////////////////////////////////
 
     override fun onUsersFetchedSuccess(users: List<User>) {
-        Toast.makeText(
-            this,
-            "There are ${users.size} users in the database",
-            Toast.LENGTH_SHORT
-        ).show()
+        showToast("There are ${users.size} users in the database")
     }
 
     override fun onUsersFetchedError(exception: String) {
@@ -92,7 +68,7 @@ class MainActivity : AppCompatActivity(),
     ///////////////////////////////////////////////////////////////////////////
 
     override fun onUserFetchedSuccess(user: User) {
-        Toast.makeText(this, user.toString(), Toast.LENGTH_LONG).show()
+        showToast(user.toString())
     }
 
     override fun onUserFetchedError(exception: String) {
@@ -108,7 +84,7 @@ class MainActivity : AppCompatActivity(),
     ///////////////////////////////////////////////////////////////////////////
 
     override fun onUserDeletedSuccess() {
-        Toast.makeText(this, "User successfully deleted", Toast.LENGTH_SHORT).show()
+        showToast("User successfully deleted")
     }
 
     override fun onUserDeletedError(exception: String) {
@@ -120,7 +96,7 @@ class MainActivity : AppCompatActivity(),
     ///////////////////////////////////////////////////////////////////////////
 
     override fun onUserUpdatedSuccess() {
-        Toast.makeText(this, "User updated successfully", Toast.LENGTH_SHORT).show()
+        showToast("User updated successfully")
     }
 
     override fun onUserUpdatedError(exception: String) {
@@ -128,34 +104,48 @@ class MainActivity : AppCompatActivity(),
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Helpers
+    // Subscriptions
     ///////////////////////////////////////////////////////////////////////////
 
-    private fun processException(exception: String, method: String) {
-        exception.also {
-            Log.d(method, it)
-            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-        }
+    private fun subscribeUpdate() {
+        update_user_button.clicks()
+            .map { update_user_input.text.toString().toInt() }
+            .bindToLifecycle(this)
+            .subscribe {
+                repository.update(UpdateCommand(it, "Test Update", "Test Update"), this)
+            }
     }
 
-    private fun getByIdUser(it: Int) {
-        repository.getById(DetailQuery(it), this)
+    private fun subscribeDelete() {
+        delete_user_button.clicks()
+            .map { delete_user_input.text.toString().toInt() }
+            .bindToLifecycle(this)
+            .subscribe {
+                repository.delete(DeleteCommand(it), this)
+            }
     }
 
-    private fun createUser() {
-        repository.create(CreateCommand(UUID.randomUUID().toString(), "Test"), this)
+    private fun subscribeCreate() {
+        create_user_button.clicks()
+            .bindToLifecycle(this)
+            .subscribe {
+                repository.create(CreateCommand(UUID.randomUUID().toString(), "Test"), this)
+            }
     }
 
-    private fun getAllUsers() {
-        repository.getAll(ListQuery(), this)
+    private fun subscribeGetAll() {
+        get_all_users_button.clicks()
+            .bindToLifecycle(this)
+            .subscribe { startActivity(Intent(this, UsersListActivity::class.java)) }
     }
 
-    private fun updateUser(id: Int) {
-        repository.update(UpdateCommand(id, "Test Update", "Test Update"), this)
-    }
-
-    private fun deleteUser(id: Int) {
-        repository.delete(DeleteCommand(id), this)
+    private fun subscribeGetById() {
+        get_by_id_user_button.clicks()
+            .map { get_by_id_user_input.text.toString().toInt() }
+            .bindToLifecycle(this)
+            .subscribe {
+                repository.getById(DetailQuery(it), this)
+            }
     }
 
     ///////////////////////////////////////////////////////////////////////////
